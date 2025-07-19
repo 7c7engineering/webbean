@@ -1,0 +1,9 @@
+- Milestones already reached:
+ - Skybean hardware prototype
+ - firmware POC
+ - Skybean production hardware
+- Milestones under development:
+ - BeanOS 0.1.0
+- Milestones still to go:
+ - BeanOS 0.2.0
+ - WebBean webapp
