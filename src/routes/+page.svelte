@@ -2,6 +2,8 @@
   <img src="/skybean.png" alt="Skybean Logo" class="logo-timeline" />
   <h1 class="timeline-title">Skybean launching soon...</h1>
   <div class="timeline timeline-angled">
+    <div class="progress-bg"></div>
+    <div class="progress-line"></div>
     <div class="milestone reached">
       <span class="dot"></span>
       <span class="label angled">Skybean hardware prototype</span>
@@ -88,11 +90,13 @@
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  margin-bottom: 0.7rem;
   border: 4px solid #fff;
   box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-  position: relative;
-  top: 0;
+  position: absolute;
+  left: 50%;
+  top: calc(3px + 50% - 14px); /* perfectly center on 6px line */
+  transform: translateX(-50%);
+  z-index: 2;
 }
 .reached .dot {
   background: #22c55e;
@@ -120,6 +124,30 @@
   top: 32px;
   right: -10px;
 }
+.progress-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 6px;
+  width: 100%;
+  background: linear-gradient(90deg, #22c55e 0%, #eab308 60%, #6366f1 100%); /* match foreground */
+  z-index: 0;
+  border-radius: 3px;
+  opacity: 0.25;
+}
+.progress-line {
+  position: absolute;
+  top: -2px;
+  left: 0;
+  height: 10px;
+  width: 40px;
+  background: linear-gradient(90deg, #22c55e 0%, #eab308 60%, #6366f1 100%); /* match background */
+  z-index: 0;
+  border-radius: 5px;
+  box-shadow: 0 2px 12px rgba(34,197,94,0.18);
+  transition: width 1.2s cubic-bezier(.77,0,.18,1), left 1.2s cubic-bezier(.77,0,.18,1);
+  opacity: 1;
+}
 @media (max-width: 900px) {
   .timeline-angled {
     flex-direction: column;
@@ -140,6 +168,7 @@
     align-items: center;
     gap: 1.2rem;
     width: auto;
+    position: relative;
   }
   .label.angled {
     position: static;
@@ -154,8 +183,60 @@
     white-space: normal;
   }
   .dot {
-    margin-bottom: 0;
-    margin-right: 0.7rem;
+    position: absolute;
+    left: 42px;
+    top: calc(3px + 50% - 14px);
+    transform: translateY(0);
+    margin-right: 0;
+  }
+  .progress-bg {
+    left: 42px;
+    top: 0;
+    width: 6px;
+    height: 100%;
+    background: linear-gradient(180deg, #22c55e 0%, #eab308 60%, #6366f1 100%); /* match foreground */
+    opacity: 0.25;
+  }
+  .progress-line {
+    left: 42px;
+    top: -2px;
+    width: 6px;
+    height: 40px;
+    /* Remove static background, will be set dynamically */
   }
 }
 </style>
+<script>
+  import { onMount } from 'svelte';
+  onMount(() => {
+    const timeline = document.querySelector('.timeline-angled');
+    const progressLine = document.querySelector('.progress-line');
+    const progressBg = document.querySelector('.progress-bg');
+    if (timeline && progressLine && progressBg) {
+      const milestones = timeline.querySelectorAll('.milestone');
+      if (milestones.length >= 4) {
+        const startDot = milestones[0].querySelector('.dot');
+        const endDot = milestones[3].querySelector('.dot');
+        if (startDot && endDot) {
+          const startRect = startDot.getBoundingClientRect();
+          const endRect = endDot.getBoundingClientRect();
+          const timelineRect = timeline.getBoundingClientRect();
+          const left = startRect.left - timelineRect.left + startRect.width / 2;
+          const right = endRect.left - timelineRect.left + endRect.width / 2;
+          const bgWidth = progressBg.offsetWidth;
+          const progressWidth = right - left;
+          // Use same gradient, but clip with background-size and background-position
+          progressLine.style.left = left + 'px';
+          progressLine.style.width = '0px';
+          progressLine.style.opacity = '1';
+          progressLine.style.background = 'linear-gradient(90deg, #22c55e 0%, #eab308 60%, #6366f1 100%)';
+          progressLine.style.backgroundSize = `${bgWidth}px 100%`;
+          progressLine.style.backgroundPosition = `-${left}px 0`;
+          setTimeout(() => {
+            progressLine.style.width = progressWidth + 'px';
+          }, 200);
+        }
+      }
+    }
+  });
+</script>
