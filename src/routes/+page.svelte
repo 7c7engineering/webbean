@@ -9,12 +9,12 @@
   } from 'svelte-vertical-timeline';
 
   const milestones = [
-    { title: "Skybean hardware prototype", status: "DONE", content: "Skybean Nano prototype completed and tested." },
-    { title: "Firmware POC", status: "DONE", content: "Firmware proof of concept validated on 2024 BRMD." },
-    { title: "Skybean production hardware", status: "DONE", content: "Skybean Nano hardware finalized." },
-    { title: "BeanOS 0.1.0", status: "IN PROGRESS", content: "First release of BeanOS in development." },
-    { title: "BeanOS 0.2.0", status: "SOON", content: "Firmware version ready to talk to WebBean." },
-    { title: "WebBean webapp", status: "SOON", content: "WebBean web application coming soon." }
+    { title: "Skybean hardware prototype", status: "DONE", content: "Skybean Nano prototype completed and tested.", link: "/specs" },
+    { title: "Firmware POC", status: "DONE", content: "Firmware proof of concept validated on 2024 BRMD.", link: null },
+    { title: "Skybean production hardware", status: "DONE", content: "Skybean Nano hardware finalized.", link: "/specs" },
+    { title: "BeanOS 0.1.0", status: "IN PROGRESS", content: "First release of BeanOS in development.", link: "https://github.com/7c7engineering/BeanOS" },
+    { title: "BeanOS 0.2.0", status: "SOON", content: "Firmware version ready to talk to WebBean.", link: null },
+    { title: "WebBean webapp", status: "SOON", content: "WebBean web application coming soon.", link: "/app" }
   ];
 
   function getDotColor(status) {
@@ -38,7 +38,15 @@
           {/if}
         </TimelineSeparator>
         <TimelineContent>
-          <h3>{m.title}</h3>
+          {#if m.link}
+            {#if m.link.startsWith('https://github.com')}
+              <h3><a href={m.link} target="_blank" rel="noopener" class="milestone-link">{m.title}</a></h3>
+            {:else}
+              <h3><a href={m.link} class="milestone-link">{m.title}</a></h3>
+            {/if}
+          {:else}
+            <h3>{m.title}</h3>
+          {/if}
           <span class="milestone-status {m.status.toLowerCase().replace(' ', '-')}">{m.status}</span>
           <p>{m.content}</p>
         </TimelineContent>
@@ -98,5 +106,13 @@
 .milestone-status.soon {
   background: #e0e7ff;
   color: #6366f1;
+}
+.milestone-link {
+  color: #6366f1;
+  text-decoration: underline;
+  transition: color 0.2s;
+}
+.milestone-link:hover {
+  color: #22c55e;
 }
 </style>
