@@ -1,34 +1,50 @@
+<script>
+  import {
+    Timeline,
+    TimelineItem,
+    TimelineSeparator,
+    TimelineDot,
+    TimelineConnector,
+    TimelineContent
+  } from 'svelte-vertical-timeline';
+
+  const milestones = [
+    { title: "Skybean hardware prototype", status: "DONE", content: "Skybean Nano prototype completed and tested." },
+    { title: "Firmware POC", status: "DONE", content: "Firmware proof of concept validated on 2024 BRMD." },
+    { title: "Skybean production hardware", status: "DONE", content: "Skybean Nano hardware finalized." },
+    { title: "BeanOS 0.1.0", status: "IN PROGRESS", content: "First release of BeanOS in development." },
+    { title: "BeanOS 0.2.0", status: "SOON", content: "Firmware version ready to talk to WebBean." },
+    { title: "WebBean webapp", status: "SOON", content: "WebBean web application coming soon." }
+  ];
+
+  function getDotColor(status) {
+    if (status === 'DONE') return '#22c55e'; // green
+    if (status === 'IN PROGRESS') return '#f59e42'; // orange
+    return '#6366f1'; // blue for SOON
+  }
+</script>
+
 <main class="milestones-timeline">
   <img src="/skybean.png" alt="Skybean Logo" class="logo-timeline" />
   <h1 class="timeline-title">Skybean launching soon...</h1>
-  <div class="timeline timeline-angled">
-    <div class="progress-bg"></div>
-    <div class="progress-line"></div>
-    <div class="milestone reached">
-      <span class="dot"></span>
-      <span class="label angled">Skybean hardware prototype</span>
-    </div>
-    <div class="milestone reached">
-      <span class="dot"></span>
-      <span class="label angled">firmware POC</span>
-    </div>
-    <div class="milestone reached">
-      <span class="dot"></span>
-      <span class="label angled">Skybean production hardware</span>
-    </div>
-    <div class="milestone in-progress">
-      <span class="dot"></span>
-      <span class="label angled">BeanOS 0.1.0</span>
-    </div>
-    <div class="milestone upcoming">
-      <span class="dot"></span>
-      <span class="label angled">BeanOS 0.2.0</span>
-    </div>
-    <div class="milestone upcoming">
-      <span class="dot"></span>
-      <span class="label angled">WebBean webapp</span>
-    </div>
-  </div>
+  <h2 class="timeline-subtitle">More specs and information will be added soon.</h2>
+  <Timeline position="alternate">
+    {#each milestones as m, i}
+      <TimelineItem>
+        <TimelineSeparator>
+          <TimelineDot style={`background:${getDotColor(m.status)};`} />
+          {#if i < milestones.length - 1}
+            <TimelineConnector />
+          {/if}
+        </TimelineSeparator>
+        <TimelineContent>
+          <h3>{m.title}</h3>
+          <span class="milestone-status {m.status.toLowerCase().replace(' ', '-')}">{m.status}</span>
+          <p>{m.content}</p>
+        </TimelineContent>
+      </TimelineItem>
+    {/each}
+  </Timeline>
 </main>
 
 <style>
@@ -51,192 +67,36 @@
 .timeline-title {
   font-size: 2rem;
   color: #6366f1;
-  margin-bottom: 2.5rem;
+  margin-bottom: 0.5rem;
   font-weight: 700;
 }
-.timeline-angled {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 0;
-  width: 100%;
-  max-width: 1100px;
-  margin-top: 1rem;
-  position: relative;
-  min-height: 180px;
+.timeline-subtitle {
+  font-size: 1.25rem;
+  color: #64748b;
+  margin-bottom: 2rem;
+  font-weight: 500;
+  text-align: center;
 }
-.timeline-angled::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 6px;
-  background: linear-gradient(90deg, #22c55e 0%, #eab308 60%, #6366f1 100%);
-  z-index: 0;
-  border-radius: 3px;
-}
-.milestone {
-  position: relative;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  z-index: 1;
-  width: 0;
-}
-.dot {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  border: 4px solid #fff;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-  position: absolute;
-  left: 50%;
-  top: calc(3px + 50% - 14px); /* perfectly center on 6px line */
-  transform: translateX(-50%);
-  z-index: 2;
-}
-.reached .dot {
-  background: #22c55e;
-}
-.in-progress .dot {
-  background: #eab308;
-}
-.upcoming .dot {
-  background: #6366f1;
-}
-.label.angled {
-  font-size: 1.08rem;
+.milestone-status {
+  display: inline-block;
+  font-size: 0.95rem;
   font-weight: 600;
-  color: #334155;
-  background: #fff;
-  padding: 0.5rem 1.2rem;
-  border-radius: 0.8rem;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-  min-width: 100px;
-  text-align: right;
-  transform: rotate(-45deg);
-  transform-origin: top right;
-  white-space: nowrap;
-  position: absolute;
-  top: 32px;
-  right: -10px;
+  margin-bottom: 0.5rem;
+  padding: 0.2em 0.7em;
+  border-radius: 1em;
+  background: #f3f4f6;
+  color: #6366f1;
 }
-.progress-bg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 6px;
-  width: 100%;
-  background: linear-gradient(90deg, #22c55e 0%, #eab308 60%, #6366f1 100%); /* match foreground */
-  z-index: 0;
-  border-radius: 3px;
-  opacity: 0.25;
+.milestone-status.done {
+  background: #dcfce7;
+  color: #22c55e;
 }
-.progress-line {
-  position: absolute;
-  top: -2px;
-  left: 0;
-  height: 10px;
-  width: 40px;
-  background: linear-gradient(90deg, #22c55e 0%, #eab308 60%, #6366f1 100%); /* match background */
-  z-index: 0;
-  border-radius: 5px;
-  box-shadow: 0 2px 12px rgba(34,197,94,0.18);
-  transition: width 1.2s cubic-bezier(.77,0,.18,1), left 1.2s cubic-bezier(.77,0,.18,1);
-  opacity: 1;
+.milestone-status.in-progress {
+  background: #fef9c3;
+  color: #f59e42;
 }
-@media (max-width: 900px) {
-  .timeline-angled {
-    flex-direction: column;
-    gap: 2.2rem;
-    max-width: 95vw;
-    min-height: 0;
-  }
-  .timeline-angled::before {
-    top: 0;
-    left: 42px;
-    right: auto;
-    width: 6px;
-    height: 100%;
-    background: linear-gradient(180deg, #22c55e 0%, #eab308 60%, #6366f1 100%);
-  }
-  .milestone {
-    flex-direction: row;
-    align-items: center;
-    gap: 1.2rem;
-    width: auto;
-    position: relative;
-  }
-  .label.angled {
-    position: static;
-    transform: rotate(15deg);
-    transform-origin: bottom left;
-    min-width: 100px;
-    margin-top: 0;
-    margin-left: 0.5rem;
-    text-align: left;
-    right: auto;
-    top: auto;
-    white-space: normal;
-  }
-  .dot {
-    position: absolute;
-    left: 42px;
-    top: calc(3px + 50% - 14px);
-    transform: translateY(0);
-    margin-right: 0;
-  }
-  .progress-bg {
-    left: 42px;
-    top: 0;
-    width: 6px;
-    height: 100%;
-    background: linear-gradient(180deg, #22c55e 0%, #eab308 60%, #6366f1 100%); /* match foreground */
-    opacity: 0.25;
-  }
-  .progress-line {
-    left: 42px;
-    top: -2px;
-    width: 6px;
-    height: 40px;
-    /* Remove static background, will be set dynamically */
-  }
+.milestone-status.soon {
+  background: #e0e7ff;
+  color: #6366f1;
 }
 </style>
-<script>
-  import { onMount } from 'svelte';
-  onMount(() => {
-    const timeline = document.querySelector('.timeline-angled');
-    const progressLine = document.querySelector('.progress-line');
-    const progressBg = document.querySelector('.progress-bg');
-    if (timeline && progressLine && progressBg) {
-      const milestones = timeline.querySelectorAll('.milestone');
-      if (milestones.length >= 4) {
-        const startDot = milestones[0].querySelector('.dot');
-        const endDot = milestones[3].querySelector('.dot');
-        if (startDot && endDot) {
-          const startRect = startDot.getBoundingClientRect();
-          const endRect = endDot.getBoundingClientRect();
-          const timelineRect = timeline.getBoundingClientRect();
-          const left = startRect.left - timelineRect.left + startRect.width / 2;
-          const right = endRect.left - timelineRect.left + endRect.width / 2;
-          const bgWidth = progressBg.offsetWidth;
-          const progressWidth = right - left;
-          // Use same gradient, but clip with background-size and background-position
-          progressLine.style.left = left + 'px';
-          progressLine.style.width = '0px';
-          progressLine.style.opacity = '1';
-          progressLine.style.background = 'linear-gradient(90deg, #22c55e 0%, #eab308 60%, #6366f1 100%)';
-          progressLine.style.backgroundSize = `${bgWidth}px 100%`;
-          progressLine.style.backgroundPosition = `-${left}px 0`;
-          setTimeout(() => {
-            progressLine.style.width = progressWidth + 'px';
-          }, 200);
-        }
-      }
-    }
-  });
-</script>
